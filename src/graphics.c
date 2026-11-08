@@ -20,12 +20,18 @@ void fill_rect(
     int s_h = surface->h;
 
     if(!s_w || !s_h) return;
-    if(x0>s_w || y0>s_h) return;
+    if(!surface->pixels || w==0 || h==0) return;
 
-    int x1 = x0 + w;
-    int y1 = y0 + h;
+    int x1 = x0 + (int)w;
+    int y1 = y0 + (int)h;
 
-    if(x1<0 || y1<0) return;
+    if(x0>=s_w || y0>=s_h) return;
+    if(x1<=0 || y1<=0) return;
+
+    if(x0<0) x0=0;
+    if(y0<0) y0=0;
+    if(x1>s_w) x1=s_w;
+    if(y1>s_h) y1=s_h;
 
     uint32_t* pixels = (uint32_t*)surface->pixels;
 
