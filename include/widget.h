@@ -1,7 +1,7 @@
 #ifndef WIDGET_H
 #define WIDGET_H
 
-#define WND_TAB_HEIGHT 25
+#define WND_TAB_HEIGHT 24
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -10,6 +10,10 @@ typedef struct SDL_Surface SDL_Surface;
 
 typedef struct WIDGET WIDGET;
 typedef struct WIDGET_LIST WIDGET_LIST;
+
+typedef struct {
+    int x,y;
+} POINT;
 
 struct WIDGET_LIST{
     WIDGET* head;
@@ -30,9 +34,12 @@ struct WIDGET{
     void (*DESTROY)(WIDGET*);
     void (*DRAW)(WIDGET*,SDL_Surface*);
 
+    WIDGET* parent;
     WIDGET* prev;
     WIDGET* next;
 };
+
+POINT ABSOLUTE_WIDGET_POS(WIDGET* w);
 
 void INIT_WIDGET(
     WIDGET* widget,
@@ -58,5 +65,6 @@ WIDGET_MANAGER* CREATE_WIDGET_MANAGER(void);
 void DESTROY_WIDGET_MANAGER(WIDGET_MANAGER* manager);
 
 extern WIDGET_LIST* TARGET_ROOT;
+extern WIDGET* TARGET_WIDGET;
 
 #endif

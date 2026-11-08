@@ -1,11 +1,9 @@
 #include "SDL2/SDL.h"
 #include "graphics.h"
-#include "text.h"
-#include <stdio.h>
+#include "wnd.h"
 
 size_t W_WIDTH = 900;
-size_t W_HEIGHT = 600;
-
+size_t W_HEIGHT = 800;
 int main(int argc,char** argv){
     if(SDL_Init(SDL_INIT_VIDEO)!=0) return 1;
 
@@ -22,30 +20,27 @@ int main(int argc,char** argv){
     SDL_Surface* surface = SDL_GetWindowSurface(window);
     if(!surface) goto quit;
 
+    WIDGET_MANAGER* widget_manager = CREATE_WIDGET_MANAGER();
+    widget_manager->surface = surface;
+    TARGET_ROOT = &widget_manager->root;
+
+    WND* wnd = CREATE_WND(100,100,400,300);
+    
+    TARGET_WIDGET = (WIDGET*)wnd;
+    
+    WND* wnd_b = CREATE_WND(5,30,200,100);
+    wnd_b->background_color = 0xFFE8ECF2;
+    wnd_b->tab_color = 0xFFCBD5E1;
+    wnd_b->title = "WINDOW B";
+    wnd_b->title_color = 0xFF000000;
+
     bool running = true;
     SDL_Event e;
 
-    SDL_Rect label = {300,150,300,300};
     clear_screen(surface,0xFFFFFFFF);
-    fill_rect(surface,label.x,label.y,label.w,label.h,0xff191307);
-
-    TEXT text = (TEXT){
-        .buffer = "HELLO WORLD!\n"
-        "How are you?\nGood luck:)\n"
-        "\n-3qp6ix\n2023 08 11",
-        .color = 0xFF00FF00,
-        .FLAGS = WRAP | CLIP | CENTER_X | CENTER_Y,
-        .font = &default_font,
-        .font_size = 16,
-        .rect = label
-    };
-
-    UPDATE_TEXT(&text);
-
-    DRAW_TEXT(&text,surface);
-
+    WIDGET_LIST_DRAW_WIDGETS(TARGET_ROOT,surface);
     SDL_UpdateWindowSurface(window);
-    
+
     while(running){
         while(SDL_PollEvent(&e)){
             switch(e.type){
@@ -54,9 +49,12 @@ int main(int argc,char** argv){
                     break;
             }
         }
+
+
     }
 
 quit:
+    DESTROY_WIDGET_MANAGER(widget_manager);
     SDL_DestroyWindow(window);
     SDL_Quit();
     return 0;

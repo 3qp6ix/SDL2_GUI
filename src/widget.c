@@ -2,6 +2,20 @@
 
 #include <stdlib.h>
 
+POINT ABSOLUTE_WIDGET_POS(WIDGET* w){
+    if(!w) return (POINT){0,0};
+    int x = w->x;
+    int y = w->y;
+    WIDGET* parent = w->parent;
+    while(parent){
+        x += parent->x;
+        y += parent->y;
+        parent = parent->parent;
+    }
+
+    return (POINT){x,y};
+}
+
 void INIT_WIDGET(
     WIDGET* widget,
     WIDGET_TYPE type,
@@ -17,6 +31,7 @@ void INIT_WIDGET(
         .w = w,.h = h,
         .children.head = NULL,
         .children.tail = NULL,
+        .parent = NULL,
         .DESTROY = DESTROY,
         .DRAW = DRAW
     };
@@ -24,7 +39,11 @@ void INIT_WIDGET(
 
 void APPEND_WIDGET(WIDGET* w){
     if(!w) return;
-    if(TARGET_ROOT){
+
+    if(TARGET_WIDGET){
+        WIDGET_LIST_APPEND(&TARGET_WIDGET->children,w);
+        w->parent = TARGET_WIDGET;
+    }else{
         WIDGET_LIST_APPEND(TARGET_ROOT,w);
     }
 }
@@ -86,3 +105,4 @@ void DESTROY_WIDGET_MANAGER(WIDGET_MANAGER* manager){
 }
 
 WIDGET_LIST* TARGET_ROOT = NULL;
+WIDGET* TARGET_WIDGET = NULL;

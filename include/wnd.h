@@ -6,8 +6,10 @@
 
 typedef struct {
     WIDGET widget;
+    char* title;
     uint32_t background_color;
     uint32_t tab_color;
+    uint32_t title_color;
 } WND;
 
 WND* CREATE_WND(
