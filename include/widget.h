@@ -2,6 +2,7 @@
 #define WIDGET_H
 
 #define WND_TAB_HEIGHT 24
+#define LABEL_TAB_HEIGHT 16
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -21,7 +22,8 @@ struct WIDGET_LIST{
 };
 
 typedef enum {
-    WND_TYPE
+    WND_TYPE,
+    LABEL_TYPE
 } WIDGET_TYPE;
 
 struct WIDGET{

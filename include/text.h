@@ -3,6 +3,7 @@
 
 #include "SDL2/SDL.h"
 #include <stdint.h>
+#include <stddef.h>
 
 #define SIZE 128
 
@@ -16,7 +17,7 @@ typedef struct {
     uint8_t* bitmap;
 } GLYPH;
 
-typedef struct {
+typedef struct FONT_DATA{
     size_t HOW_MANY;
     uint16_t line_height;
     GLYPH glyphs[SIZE];
@@ -29,7 +30,7 @@ typedef struct {
     uint16_t font_size;
     uint32_t color;
     uint8_t FLAGS;
-
+    size_t scroll_y;
     size_t w,h;
 } TEXT;
 
@@ -40,6 +41,6 @@ void DESTROY_FONT_DATA(FONT_DATA* f_data);
 
 void DRAW_TEXT(TEXT* text,SDL_Surface* surface);
 
-extern FONT_DATA default_font;
+extern FONT_DATA* DEFAULT_FONT;
 
 #endif

@@ -31,7 +31,7 @@ void DRAW_WND(WIDGET* w,SDL_Surface* surface){
                 .buffer = wnd->title,
                 .color = wnd->title_color,
                 .FLAGS = 0,
-                .font = &default_font,
+                .font = DEFAULT_FONT,
                 .font_size = 8,
                 .rect = (SDL_Rect){abs.x+8,abs.y+8,8,w->w}
             },
