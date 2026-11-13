@@ -1,6 +1,4 @@
 #include "label.h"
-#include "text.h"
-#include "SDL2/SDL.h"
 #include "graphics.h"
 #include <stdlib.h>
 
@@ -32,9 +30,11 @@ void DRAW_LABEL(WIDGET* w,SDL_Surface* surface){
             .FLAGS = 0,
             .font = DEFAULT_FONT,
             .font_size = 8,
-            .rect = (SDL_Rect){abs.x+4,abs.y+4,w->w-8,8}
+            .rect = (SDL_Rect){abs.x+4,abs.y+4,w->w-8,8},
+            .scroll_y = 0
         };
 
+        label->text.rect = (SDL_Rect){abs.x+5,abs.y+offset_y+5,w->w-10,w->h-10};
         DRAW_TEXT(
             &text,
             surface
@@ -48,19 +48,14 @@ void DRAW_LABEL(WIDGET* w,SDL_Surface* surface){
         label->background_color
     );
 
-    if(label->text){
-        TEXT text = (TEXT){
-            .buffer = label->text,
-            .color = label->color,
-            .FLAGS = CLIP | WRAP,
-            .font = label->font,
-            .font_size = label->font_size,
-            .rect = (SDL_Rect){abs.x+5,abs.y+LABEL_TAB_HEIGHT+5,w->w-10,w->h-10-LABEL_TAB_HEIGHT},
-            .scroll_y = label->scroll_y
-        };
+    outline_rect(
+        surface,
+        abs.x,abs.y,
+        w->w,w->h+offset_y,
+        0xFF333333,2
+    );
 
-        DRAW_TEXT(&text,surface);
-    }
+    DRAW_TEXT(&label->text,surface);
 }
 
 LABEL* CREATE_LABEL(
@@ -76,14 +71,17 @@ LABEL* CREATE_LABEL(
         &new_label->widget,LABEL_TYPE,
         x,y,w,h,
         DESTROY_LABEL,
-        DRAW_LABEL
+        DRAW_LABEL,
+        NULL
     );
 
     new_label->background_color = 0xFF1C140B;
     new_label->title_color = 0xFFFFB52E;
     new_label->tab_color = 0xFFA85D00;
-    new_label->color = 0xFFFFB000;
-    new_label->font_size = 8;
+    new_label->text.color = 0xFFFFB000;
+    new_label->text.font_size = 8;
 
     APPEND_WIDGET((WIDGET*)new_label);
+
+    return new_label;
 };

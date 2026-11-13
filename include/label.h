@@ -1,6 +1,7 @@
 #ifndef LABEL_H
 #define LABEL_H
 
+#include "text.h"
 #include "widget.h"
 #include <stdint.h>
 
@@ -13,10 +14,7 @@ typedef struct {
     uint32_t title_color;
     uint32_t color;
     char* title;
-    char* text;
-    uint16_t font_size;
-    FONT_DATA* font;
-    size_t scroll_y;
+    TEXT text;
 } LABEL;
 
 void DESTROY_LABEL(WIDGET* w);

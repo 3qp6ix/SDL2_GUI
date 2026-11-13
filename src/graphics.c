@@ -2,10 +2,12 @@
 
 void clear_screen(SDL_Surface* surface,uint32_t color){
     if(!surface) return;
+
     uint32_t* pixels = (uint32_t*)surface->pixels;
-    for(int i=0;i<surface->w*surface->h;i++){
+
+    for(int i = 0; i < surface->w * surface->h; i++){
         pixels[i] = color;
-    } 
+    }
 }
 
 void fill_rect(
@@ -14,24 +16,33 @@ void fill_rect(
     size_t w,size_t h,
     uint32_t color
 ){
-    if(!surface) return;
+    if(!surface || !surface->pixels) return;
 
     int s_w = surface->w;
     int s_h = surface->h;
 
-    if(!s_w || !s_h) return;
-    if(x0>s_w || y0>s_h) return;
+    if(!s_w || !s_h || !w || !h) return;
 
-    int x1 = x0 + w;
-    int y1 = y0 + h;
+    int64_t x1 = (int64_t)x0 + w;
+    int64_t y1 = (int64_t)y0 + h;
 
-    if(x1<0 || y1<0) return;
+    // Completely outside the surface
+    if(x1 <= 0 || y1 <= 0 || x0 >= s_w || y0 >= s_h) return;
 
-    uint32_t* pixels = (uint32_t*)surface->pixels;
+    // Clip rectangle to surface boundaries
+    int sx = x0 < 0 ? 0 : x0;
+    int sy = y0 < 0 ? 0 : y0;
 
-    for(int y=y0;y<y1;y++){
-        for(int x=x0;x<x1;x++){
-            pixels[y*s_w+x] = color;
+    int ex = x1 > s_w ? s_w : (int)x1;
+    int ey = y1 > s_h ? s_h : (int)y1;
+
+    uint8_t* pixels = (uint8_t*)surface->pixels;
+
+    for(int y = sy; y < ey; y++){
+        uint32_t* row = (uint32_t*)(pixels + y * surface->pitch);
+
+        for(int x = sx; x < ex; x++){
+            row[x] = color;
         }
     }
 }
@@ -43,17 +54,12 @@ void outline_rect(
     uint32_t color,
     size_t stroke_width
 ){
-    if(!surface || (w==0 || h==0)) return;
-    if(x0>=surface->w || y0>=surface->h) return;
-
-    int x1 = x0 + w;
-    int y1 = y0 + h;
-    
-    if(x1 < 0 || y1 < 0) return;
+    if(!surface || !w || !h || !stroke_width) return;
 
     fill_rect(
         surface,
-        x0-stroke_width,y0-stroke_width,
+        x0-(int)stroke_width,
+        y0-(int)stroke_width,
         w+stroke_width*2,
         stroke_width,
         color
@@ -61,24 +67,25 @@ void outline_rect(
 
     fill_rect(
         surface,
-        x0+w,y0,
+        x0+(int)w,
+        y0,
         stroke_width,
-        h+stroke_width,
+        h,
         color
     );
 
     fill_rect(
         surface,
-        x0-stroke_width,
-        y0+h,
-        w+stroke_width,
+        x0-(int)stroke_width,
+        y0+(int)h,
+        w+stroke_width*2,
         stroke_width,
         color
     );
 
     fill_rect(
         surface,
-        x0-stroke_width,
+        x0-(int)stroke_width,
         y0,
         stroke_width,
         h,
